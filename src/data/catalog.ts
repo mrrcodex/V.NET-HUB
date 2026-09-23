@@ -1,4 +1,6 @@
-export const VENDORS = [
+import type { Job, Kanban, Product, Vendor } from '../types.ts';
+
+export const VENDORS: Vendor[] = [
   { name: 'Dapur Alumni Bu Rina', cat: 'Konsumsi', emoji: '🍱', bg: '#FFF7ED', rating: '4.9 (210)', price: 'Mulai Rp 12rb/pax', desc: 'Catering & snack box — 100 s.d. 2000 pax' },
   { name: 'Konveksi Alumni Jaya', cat: 'Konveksi', emoji: '👕', bg: '#EFF6FF', rating: '4.8 (180)', price: 'Mulai Rp 65rb/pcs', desc: 'Kaos panitia, PDH, hoodie sablon & bordir' },
   { name: 'PrintQ Alumni Media', cat: 'Percetakan', emoji: '🖨️', bg: '#F5F3FF', rating: '4.9 (320)', price: 'Mulai Rp 5rb/lbr', desc: 'Banner, poster, booklet, tiket & merch cetak' },
@@ -9,13 +11,13 @@ export const VENDORS = [
 
 export const VENDOR_CATEGORIES = ['Semua', 'Konsumsi', 'Konveksi', 'Percetakan', 'Dokumentasi', 'Dekorasi'];
 
-export const INITIAL_PRODUCTS = [
+export const INITIAL_PRODUCTS: Product[] = [
   { n: 'Snack Box Reguler', c: 'Konsumsi', p: 'Rp 12.000 / pax', s: '2000 pax' },
   { n: 'Nasi Box Ayam Geprek', c: 'Konsumsi', p: 'Rp 15.000 / pax', s: '1500 pax' },
   { n: 'Paket Coffee Break', c: 'Konsumsi', p: 'Rp 10.000 / cup', s: '1000 cup' },
 ];
 
-export const INITIAL_KANBAN = {
+export const INITIAL_KANBAN: Kanban = {
   Menunggu: [
     { t: 'Snack 600 box — Dies Natalis', s: 'BEM FEB • 20 Sep 2026', vendor: 'Dapur Alumni Bu Rina', detail: 'Snack box isi 3' },
     { t: 'Coffee break 150 pax — Seminar', s: 'HIMA TI • 25 Sep 2026', vendor: 'Kopi Alumni Space', detail: 'Coffee + snack' },
@@ -30,7 +32,7 @@ export const INITIAL_KANBAN = {
 
 export const JOB_FILTERS = ['Semua', 'Magang', 'Freelance', 'Studi Kasus'];
 
-export const INITIAL_JOBS = [
+export const INITIAL_JOBS: Job[] = [
   {
     type: 'Magang',
     title: 'Social Media Specialist (Magang)',

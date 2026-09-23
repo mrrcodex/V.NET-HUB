@@ -1,7 +1,15 @@
 import { useState } from 'react';
-import { Button, Field, Modal, inputCls } from '../ui/controls.jsx';
+import { Button, Field, Modal, inputCls } from '../ui/controls.tsx';
+import type { RfqDraft, Vendor } from '../../types.ts';
 
-export function RfqModal({ open, vendor, onClose, onSubmit }) {
+interface RfqModalProps {
+  open: boolean;
+  vendor: Pick<Vendor, 'name' | 'cat' | 'emoji'> | null;
+  onClose: () => void;
+  onSubmit: (draft: RfqDraft | null) => void;
+}
+
+export function RfqModal({ open, vendor, onClose, onSubmit }: RfqModalProps) {
   const [event, setEvent] = useState('');
   const [date, setDate] = useState('');
   const [budget, setBudget] = useState('');

@@ -1,9 +1,10 @@
-import { Button, Panel, StatusPill, inputCls, Field, Modal } from '../ui/controls.jsx';
-import { getWA, waOrderLink, waCancelLink } from '../../utils/wa.js';
-import { CANCEL_REASONS } from '../../data/catalog.js';
+import { Button, Panel, StatusPill, inputCls, Field, Modal } from '../ui/controls.tsx';
+import { getWA, waOrderLink, waCancelLink } from '../../utils/wa.ts';
+import { CANCEL_REASONS } from '../../data/catalog.ts';
 import { useState } from 'react';
+import type { AlumniPath, B2BOrder, CancelledOrder, Job, JobDraft, Kanban, KanbanColumn, Product } from '../../types.ts';
 
-const PATHS = [
+const PATHS: { id: AlumniPath; label: string }[] = [
   { id: 'dashboard', label: '📊 Dashboard' },
   { id: 'katalog', label: '🧾 Katalog Produk' },
   { id: 'pesanan', label: '📦 Pesanan (B2B)' },
@@ -11,7 +12,13 @@ const PATHS = [
   { id: 'profil', label: '🏪 Profil UMKM' },
 ];
 
-export function AlumniSidebar({ path, onNav, b2bCount }) {
+interface SidebarProps {
+  path: AlumniPath;
+  onNav: (p: AlumniPath) => void;
+  b2bCount: number;
+}
+
+export function AlumniSidebar({ path, onNav, b2bCount }: SidebarProps) {
   return (
     <aside className="rounded-2xl bg-slate-900 p-4 text-slate-300 lg:sticky lg:top-[78px]">
       <div className="px-2.5 pb-4 font-extrabold text-white">🍔 Dapur Alumni Bu Rina</div>
@@ -39,12 +46,12 @@ export function AlumniSidebar({ path, onNav, b2bCount }) {
   );
 }
 
-export function KpiCards({ masuk, diproses }) {
+export function KpiCards({ masuk, diproses }: { masuk: number; diproses: number }) {
   const kpis = [
     { label: 'RFQ Masuk bulan ini', value: String(12 + masuk + diproses), hint: '▲ 22% vs bulan lalu', hot: true },
-    { label: 'Pesanan Diproses', value: String(diproses), hint: 'Estimasi Rp 24,5 jt' },
-    { label: 'Pesanan Selesai', value: '32', hint: 'Rating 4.9 / 5.0' },
-    { label: 'Profil Dilihat', value: '1.240', hint: 'oleh panitia kampus' },
+    { label: 'Pesanan Diproses', value: String(diproses), hint: 'Estimasi Rp 24,5 jt', hot: false },
+    { label: 'Pesanan Selesai', value: '32', hint: 'Rating 4.9 / 5.0', hot: false },
+    { label: 'Profil Dilihat', value: '1.240', hint: 'oleh panitia kampus', hot: false },
   ];
   return (
     <div className="grid gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
@@ -59,7 +66,7 @@ export function KpiCards({ masuk, diproses }) {
   );
 }
 
-export function RecentOrders({ orders, onManage }) {
+export function RecentOrders({ orders, onManage }: { orders: B2BOrder[]; onManage: () => void }) {
   return (
     <Panel
       title="Ringkasan Pesanan B2B Terbaru"
@@ -93,7 +100,13 @@ export function RecentOrders({ orders, onManage }) {
   );
 }
 
-export function ProductTable({ products, onAdd, onDelete }) {
+interface ProductTableProps {
+  products: Product[];
+  onAdd: (p: Product | null) => void;
+  onDelete: (i: number) => void;
+}
+
+export function ProductTable({ products, onAdd, onDelete }: ProductTableProps) {
   const [name, setName] = useState('');
   const [cat, setCat] = useState('Konsumsi');
   const [price, setPrice] = useState('');
@@ -163,7 +176,15 @@ export function ProductTable({ products, onAdd, onDelete }) {
   );
 }
 
-function OrderCard({ order, status, onMove, onCancel, onCatalog }) {
+interface OrderCardProps {
+  order: B2BOrder;
+  status: string;
+  onMove: () => void;
+  onCancel: () => void;
+  onCatalog: () => void;
+}
+
+function OrderCard({ order, status, onMove, onCancel, onCatalog }: OrderCardProps) {
   const wa = getWA(order.vendor ?? '-');
   const waUrl = waOrderLink(order.vendor ?? '-', order.t);
   return (
@@ -200,8 +221,18 @@ function OrderCard({ order, status, onMove, onCancel, onCatalog }) {
   );
 }
 
-export function KanbanBoard({ kanban, cancelled, onMove, onCancel, onRestore, onDeleteCancelled, onCatalog }) {
-  const cols = ['Menunggu', 'Diproses', 'Selesai'];
+interface KanbanBoardProps {
+  kanban: Kanban;
+  cancelled: CancelledOrder[];
+  onMove: (st: KanbanColumn, i: number) => void;
+  onCancel: (st: KanbanColumn, i: number, item: B2BOrder) => void;
+  onRestore: (idx: number) => void;
+  onDeleteCancelled: (idx: number) => void;
+  onCatalog: () => void;
+}
+
+export function KanbanBoard({ kanban, cancelled, onMove, onCancel, onRestore, onDeleteCancelled, onCatalog }: KanbanBoardProps) {
+  const cols: KanbanColumn[] = ['Menunggu', 'Diproses', 'Selesai'];
   return (
     <Panel
       title="Pesanan B2B — #/alumni/pesanan"
@@ -258,8 +289,14 @@ export function KanbanBoard({ kanban, cancelled, onMove, onCancel, onRestore, on
   );
 }
 
-export function CancelModal({ open, info, onClose, onConfirm }) {
-  const [reason, setReason] = useState(CANCEL_REASONS[0]);
+interface CancelConfirm {
+  reason: string;
+  note: string;
+  notify: boolean;
+}
+
+export function CancelModal({ open, info, onClose, onConfirm }: { open: boolean; info: string; onClose: () => void; onConfirm: (c: CancelConfirm) => void }) {
+  const [reason, setReason] = useState(CANCEL_REASONS[0] ?? '');
   const [note, setNote] = useState('');
   const [notify, setNotify] = useState(true);
 
@@ -295,7 +332,7 @@ export function CancelModal({ open, info, onClose, onConfirm }) {
           onClick={() => {
             onConfirm({ reason, note: note.trim(), notify });
             setNote('');
-            setReason(CANCEL_REASONS[0]);
+            setReason(CANCEL_REASONS[0] ?? '');
             setNotify(true);
           }}
         >
@@ -306,7 +343,13 @@ export function CancelModal({ open, info, onClose, onConfirm }) {
   );
 }
 
-export function MagangPanel({ myJobs, onPost, onViewBoard }) {
+interface MagangPanelProps {
+  myJobs: Job[];
+  onPost: (draft: JobDraft | null) => void;
+  onViewBoard: () => void;
+}
+
+export function MagangPanel({ myJobs, onPost, onViewBoard }: MagangPanelProps) {
   const [title, setTitle] = useState('');
   const [type, setType] = useState('Magang');
   const [desc, setDesc] = useState('');
@@ -361,7 +404,7 @@ export function MagangPanel({ myJobs, onPost, onViewBoard }) {
   );
 }
 
-export function ProfilePanel({ onSave, onPreview }) {
+export function ProfilePanel({ onSave, onPreview }: { onSave: () => void; onPreview: () => void }) {
   return (
     <Panel title="Profil UMKM — #/alumni/profil" sub="Update deskripsi bisnis, kontak, alamat operasional, dan foto produk.">
       <div className="grid gap-3.5 sm:grid-cols-2">

@@ -1,8 +1,16 @@
 import { useMemo, useState } from 'react';
-import { Hero, CategoryPills, VendorCard } from '../catalog/catalog.jsx';
-import { VENDORS } from '../../data/catalog.js';
+import { Hero, CategoryPills, VendorCard } from './catalog.tsx';
+import { VENDORS } from '../../data/catalog.ts';
+import type { Vendor } from '../../types.ts';
 
-export function CatalogScreen({ query, onQuote, onDetail, onJobs }) {
+interface CatalogScreenProps {
+  query: string;
+  onQuote: (v: Vendor) => void;
+  onDetail: (v: Vendor) => void;
+  onJobs: () => void;
+}
+
+export function CatalogScreen({ query, onQuote, onDetail, onJobs }: CatalogScreenProps) {
   const [cat, setCat] = useState('Semua');
 
   const list = useMemo(() => {

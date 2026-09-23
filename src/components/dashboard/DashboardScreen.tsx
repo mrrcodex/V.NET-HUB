@@ -1,5 +1,5 @@
-import { Button, Panel, Tag } from '../ui/controls.jsx';
-import { waCancelLink } from '../../utils/wa.js';
+import { Button, Panel, Tag } from '../ui/controls.tsx';
+import { waCancelLink } from '../../utils/wa.ts';
 import {
   AlumniSidebar,
   CancelModal,
@@ -9,15 +9,33 @@ import {
   ProductTable,
   ProfilePanel,
   RecentOrders,
-} from './alumni.jsx';
+} from './alumni.tsx';
+import type { AlumniPath, B2BOrder, CancelTarget, Job, JobDraft, Product, ToastFn } from '../../types.ts';
+import type { UseB2B } from '../../hooks/useB2B.ts';
 
-const PATH_LABEL = {
+const PATH_LABEL: Record<AlumniPath, string> = {
   dashboard: 'Dashboard',
   katalog: 'Katalog Produk',
   pesanan: 'Pesanan (B2B)',
   magang: 'Lowongan Magang',
   profil: 'Profil UMKM',
 };
+
+interface DashboardScreenProps {
+  path: AlumniPath;
+  onNav: (p: AlumniPath) => void;
+  b2b: UseB2B;
+  products: Product[];
+  onAddProduct: (p: Product) => void;
+  onDeleteProduct: (i: number) => void;
+  jobs: Job[];
+  onPostJob: (draft: JobDraft) => void;
+  cancel: { open: boolean; target: CancelTarget | null };
+  onCancelModal: (t: CancelTarget | null) => void;
+  toast: ToastFn;
+  onPreview: () => void;
+  onViewBoard: () => void;
+}
 
 export function DashboardScreen({
   path,
@@ -33,8 +51,8 @@ export function DashboardScreen({
   toast,
   onPreview,
   onViewBoard,
-}) {
-  const recent = [...b2b.kanban.Menunggu, ...b2b.kanban.Diproses];
+}: DashboardScreenProps) {
+  const recent: B2BOrder[] = [...b2b.kanban.Menunggu, ...b2b.kanban.Diproses];
   const myJobs = jobs.filter((j) => j.by.includes('Bu Rina') || j.mine);
 
   return (
@@ -128,6 +146,7 @@ export function DashboardScreen({
         info={cancel.target ? `"${cancel.target.item.t}" • dari kolom ${cancel.target.st}` : ''}
         onClose={() => onCancelModal(null)}
         onConfirm={({ reason, note, notify }) => {
+          if (!cancel.target) return;
           const { st, i, item } = cancel.target;
           b2b.cancelOrder(st, i, item, { reason, note });
           onCancelModal(null);

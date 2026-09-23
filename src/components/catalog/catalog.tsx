@@ -1,7 +1,8 @@
-import { Badge, Button } from '../ui/controls.jsx';
-import { VENDOR_CATEGORIES } from '../../data/catalog.js';
+import { Badge, Button } from '../ui/controls.tsx';
+import { VENDOR_CATEGORIES } from '../../data/catalog.ts';
+import type { Vendor } from '../../types.ts';
 
-export function Hero({ onExplore, onJobs }) {
+export function Hero({ onExplore, onJobs }: { onExplore: () => void; onJobs: () => void }) {
   return (
     <div className="relative grid gap-5 overflow-hidden rounded-3xl bg-gradient-to-br from-blue-700 via-blue-600 to-blue-400 p-8 text-white md:grid-cols-[1.2fr_.8fr] md:p-9">
       <div className="pointer-events-none absolute -right-16 -top-16 h-80 w-80 rounded-full bg-white/10" />
@@ -44,7 +45,7 @@ export function Hero({ onExplore, onJobs }) {
   );
 }
 
-export function CategoryPills({ active, onChange }) {
+export function CategoryPills({ active, onChange }: { active: string; onChange: (c: string) => void }) {
   return (
     <div className="my-3.5 flex flex-wrap gap-2.5">
       {VENDOR_CATEGORIES.map((c) => (
@@ -64,7 +65,13 @@ export function CategoryPills({ active, onChange }) {
   );
 }
 
-export function VendorCard({ vendor, onQuote, onDetail }) {
+interface VendorCardProps {
+  vendor: Vendor;
+  onQuote: (v: Vendor) => void;
+  onDetail: (v: Vendor) => void;
+}
+
+export function VendorCard({ vendor, onQuote, onDetail }: VendorCardProps) {
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_4px_24px_rgba(37,99,235,.08)]">
       <div className="relative flex h-[170px] items-center justify-center text-6xl" style={{ background: vendor.bg }}>

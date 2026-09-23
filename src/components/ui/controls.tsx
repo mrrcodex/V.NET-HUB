@@ -1,5 +1,13 @@
-export function Button({ variant = 'blue', className = '', ...props }) {
-  const styles = {
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
+
+type ButtonVariant = 'blue' | 'white' | 'outline' | 'wa' | 'danger' | 'ghostLight';
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant;
+}
+
+export function Button({ variant = 'blue', className = '', ...props }: ButtonProps) {
+  const styles: Record<ButtonVariant, string> = {
     blue: 'bg-blue-600 text-white hover:bg-blue-700',
     white: 'bg-white text-blue-700 hover:bg-blue-50',
     outline: 'bg-white border border-slate-200 text-slate-800 hover:border-blue-600 hover:text-blue-600',
@@ -9,13 +17,13 @@ export function Button({ variant = 'blue', className = '', ...props }) {
   };
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition ${styles[variant] ?? styles.blue} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition ${styles[variant]} ${className}`}
       {...props}
     />
   );
 }
 
-export function Badge({ children, className = '' }) {
+export function Badge({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
     <span className={`inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-xs font-bold text-emerald-700 shadow ${className}`}>
       {children}
@@ -23,8 +31,8 @@ export function Badge({ children, className = '' }) {
   );
 }
 
-export function StatusPill({ status }) {
-  const map = {
+export function StatusPill({ status }: { status: string }) {
+  const map: Record<string, string> = {
     Menunggu: 'bg-amber-100 text-amber-800',
     Diproses: 'bg-blue-100 text-blue-700',
     Selesai: 'bg-green-100 text-green-800',
@@ -37,7 +45,7 @@ export function StatusPill({ status }) {
   );
 }
 
-export function Tag({ className = '', children }) {
+export function Tag({ className = '', children }: { className?: string; children: ReactNode }) {
   return (
     <span className={`inline-block rounded-full px-2.5 py-1 text-[11px] font-extrabold ${className}`}>
       {children}
@@ -45,14 +53,14 @@ export function Tag({ className = '', children }) {
   );
 }
 
-export const JOB_TAG_STYLES = {
+export const JOB_TAG_STYLES: Record<string, string> = {
   't-mag': 'bg-green-100 text-green-800',
   't-free': 'bg-blue-100 text-blue-700',
   't-proj': 'bg-purple-100 text-purple-800',
   't-case': 'bg-amber-100 text-amber-800',
 };
 
-export function Field({ label, children }) {
+export function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="grid gap-1.5">
       <span className="text-[13px] font-bold">{label}</span>
@@ -64,7 +72,14 @@ export function Field({ label, children }) {
 export const inputCls =
   'w-full rounded-xl border border-slate-200 px-3.5 py-3 text-sm outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100';
 
-export function Panel({ title, sub, children, action }) {
+interface PanelProps {
+  title: string;
+  sub?: ReactNode;
+  children: ReactNode;
+  action?: ReactNode;
+}
+
+export function Panel({ title, sub, children, action }: PanelProps) {
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-5">
       <div className="mb-1 flex items-start justify-between gap-3">
@@ -77,7 +92,16 @@ export function Panel({ title, sub, children, action }) {
   );
 }
 
-export function Modal({ open, onClose, title, subtitle, headerClass = 'bg-gradient-to-br from-blue-700 to-blue-500', children }) {
+interface ModalProps {
+  open: boolean;
+  onClose?: () => void;
+  title: string;
+  subtitle?: string;
+  headerClass?: string;
+  children: ReactNode;
+}
+
+export function Modal({ open, onClose, title, subtitle, headerClass = 'bg-gradient-to-br from-blue-700 to-blue-500', children }: ModalProps) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/55 p-4" onClick={(e) => e.target === e.currentTarget && onClose?.()}>

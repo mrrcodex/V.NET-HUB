@@ -1,8 +1,14 @@
 import { useState } from 'react';
-import { Button, JOB_TAG_STYLES, Tag } from '../ui/controls.jsx';
-import { JOB_FILTERS } from '../../data/catalog.js';
+import { Button, JOB_TAG_STYLES, Tag } from '../ui/controls.tsx';
+import { JOB_FILTERS } from '../../data/catalog.ts';
+import type { Job } from '../../types.ts';
 
-export function JobsBoard({ jobs, onApply }) {
+interface JobsBoardProps {
+  jobs: Job[];
+  onApply: (fileName: string) => void;
+}
+
+export function JobsBoard({ jobs, onApply }: JobsBoardProps) {
   const [filter, setFilter] = useState('Semua');
   const [active, setActive] = useState(0);
 
@@ -63,7 +69,7 @@ export function JobsBoard({ jobs, onApply }) {
   );
 }
 
-function JobDetail({ job, onApply }) {
+function JobDetail({ job, onApply }: { job: Job; onApply: (fileName: string) => void }) {
   const [fileName, setFileName] = useState('');
 
   return (
