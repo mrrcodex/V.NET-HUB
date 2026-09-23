@@ -27,7 +27,7 @@ export function Hero({ onExplore, onJobs }) {
       <div className="relative z-[1] self-center rounded-2xl bg-white p-4 text-slate-900 shadow-xl">
         <b>🤝 Ekosistem V.NET-HUB</b>
         <p className="text-[13px] text-slate-500">Mahasiswa dapat vendor tepercaya • Alumni dapat pasar B2B captive</p>
-        <div className="mt-3 flex gap-3">
+        <div className="mt-3 flex gap-3 ">
           {[
             ['120+', 'UMKM Alumni'],
             ['350+', 'Acara Dilayani'],
