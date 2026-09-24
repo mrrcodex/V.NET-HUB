@@ -1,4 +1,7 @@
 import { Button, Badge } from '../ui/controls.tsx';
+import { UpnHero } from '../hero/UpnHero.tsx';
+import { MorphDivider } from '../hero/MorphDivider.tsx';
+import { useReveal } from '../../hooks/useReveal.ts';
 import { VENDORS } from '../../data/catalog.ts';
 import { BUNDLES, FAQS, PORTFOLIO_CASES, PRICING, TESTIMONIALS, UPN_FACULTIES, UPN_IDENTITY } from '../../data/upn.ts';
 import type { Bundle } from '../../types.ts';
@@ -23,64 +26,28 @@ interface LandingProps {
 }
 
 export function LandingScreen({ onCatalog, onPortfolio, onJobs, onLogin, onRegister, onBundle }: LandingProps) {
+  const revealRef = useReveal<HTMLDivElement>();
   return (
-    <div className="grid gap-10">
-      {/* HERO */}
-      <div className="relative grid gap-5 overflow-hidden rounded-3xl bg-gradient-to-br from-blue-800 via-blue-700 to-blue-500 p-8 text-white md:grid-cols-[1.2fr_.8fr] md:p-10">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-80 w-80 rounded-full bg-white/10" />
-        <div className="pointer-events-none absolute -bottom-24 right-24 h-56 w-56 rounded-full bg-emerald-300/20" />
-        <div className="relative z-[1]">
-          <div className="flex flex-wrap gap-2">
-            <span className="inline-flex rounded-full border border-white/30 bg-white/20 px-3 py-1.5 text-[13px] font-semibold">
-              🎖️ {UPN_IDENTITY.tagline} • {UPN_IDENTITY.sesanti}
-            </span>
-            <span className="inline-flex rounded-full border border-white/30 bg-emerald-400/30 px-3 py-1.5 text-[13px] font-semibold">
-              🤝 Resmi kolaborasi {UPN_IDENTITY.short}
-            </span>
-          </div>
-          <h1 className="font-display my-3 text-3xl font-bold leading-tight md:text-4xl">
-            Circular Economy
-            <br />
-            Kampus × Alumni UPNVJT
-          </h1>
-          <p className="mb-5 max-w-xl opacity-90">
-            Panitia acara dari 8 fakultas pesan konsumsi, konveksi, cetak, dokumentasi & dekor langsung ke UMKM alumni
-            terverifikasi. Uang acara kembali ke ekosistem kampus — plus magang & proyek untuk mahasiswa.
-          </p>
-          <div className="flex flex-wrap gap-2.5">
-            <Button variant="white" onClick={onCatalog}>
-              Cari Vendor →
-            </Button>
-            <Button variant="ghostLight" onClick={onRegister}>
-              Jadi Mitra Alumni
-            </Button>
-            <Button variant="ghostLight" onClick={onJobs}>
-              Cari Magang
-            </Button>
-          </div>
-          <div className="mt-4 flex flex-wrap gap-2 text-[13px] opacity-90">
-            <span>✔ Tanpa biaya untuk panitia</span>•<span>✔ Nota resmi untuk LPJ</span>•<span>✔ Respons &lt; 1×24 jam</span>
-          </div>
-        </div>
-        <div className="relative z-[1] self-center rounded-2xl bg-white p-5 text-slate-900 shadow-xl">
-          <b>📊 Dampak Ekosistem (live demo)</b>
-          <p className="text-[13px] text-slate-500">Dihitung dari transaksi + kanban B2B aktif</p>
-          <div className="mt-3 grid grid-cols-3 gap-2.5">
-            {[['120+', 'UMKM Alumni'], ['350+', 'Acara Dilayani'], ['85', 'Magang Aktif']].map(([n, l]) => (
-              <div key={l} className="rounded-xl bg-blue-50 p-2.5 text-center">
-                <b className="block text-lg text-blue-800">{n}</b>
-                <span className="text-xs text-slate-500">{l}</span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-3 rounded-xl bg-emerald-50 p-3 text-[13px] text-emerald-800">
-            💰 <b>Rp 480 jt+</b> perputaran kembali ke alumni tahun ini
-          </div>
-        </div>
+    <div>
+      <UpnHero>
+        <Button variant="white" onClick={onCatalog}>
+          Cari Vendor →
+        </Button>
+        <Button variant="ghostLight" onClick={onRegister}>
+          Jadi Mitra Alumni
+        </Button>
+        <Button variant="ghostLight" onClick={onJobs}>
+          Cari Magang
+        </Button>
+      </UpnHero>
+      <div className="bg-[#081c3f]">
+        <MorphDivider from="#081c3f" to="#f8fafc" />
       </div>
 
+      <div ref={revealRef} className="mx-auto grid max-w-6xl gap-10 px-5 py-10">
+
       {/* TRUST BAR */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-4">
+      <div className="reveal rounded-2xl border border-slate-200 bg-white p-4">
         <p className="mb-2 text-center text-xs font-bold text-slate-400">
           DIPAKAI 8 FAKULTAS {UPN_IDENTITY.short} • {UPN_IDENTITY.location}
         </p>
@@ -94,7 +61,7 @@ export function LandingScreen({ onCatalog, onPortfolio, onJobs, onLogin, onRegis
       </div>
 
       {/* KATALOG TEASER */}
-      <div>
+      <div className="reveal">
         <SectionTitle kicker="KATALOG VENDOR" title="UMKM Alumni Terverifikasi" sub="Contoh 3 vendor unggulan — buka katalog untuk 6+ vendor dan 5 kategori" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {VENDORS.slice(0, 3).map((v) => (
@@ -121,7 +88,7 @@ export function LandingScreen({ onCatalog, onPortfolio, onJobs, onLogin, onRegis
       </div>
 
       {/* PORTOFOLIO */}
-      <div>
+      <div className="reveal">
         <SectionTitle
           kicker="PORTOFOLIO KOLABORASI"
           title="Event Kampus yang Sudah Jalan"
@@ -156,7 +123,8 @@ export function LandingScreen({ onCatalog, onPortfolio, onJobs, onLogin, onRegis
       </div>
 
       {/* CARA KERJA */}
-      <div className="rounded-3xl bg-slate-900 p-8 text-white">
+      <div className="reveal overflow-hidden rounded-3xl bg-slate-900 text-white">
+        <div className="p-8 pb-0">
         <SectionTitle kicker="CARA KERJA" title="Dari RFQ sampai LPJ beres" sub="" />
         <div className="grid gap-3 md:grid-cols-3">
           {[
@@ -171,10 +139,12 @@ export function LandingScreen({ onCatalog, onPortfolio, onJobs, onLogin, onRegis
             </div>
           ))}
         </div>
+        </div>
+        <MorphDivider from="#0f172a" to="#f8fafc" />
       </div>
 
       {/* BUNDLING */}
-      <div>
+      <div className="reveal">
         <SectionTitle kicker="PAKET HEMAT" title="Paket Bundling Acara" sub="1 RFQ untuk 3 vendor — lebih murah, 1 nota" />
         <div className="grid gap-4 md:grid-cols-3">
           {BUNDLES.map((b) => (
@@ -197,7 +167,7 @@ export function LandingScreen({ onCatalog, onPortfolio, onJobs, onLogin, onRegis
       </div>
 
       {/* TESTIMONI */}
-      <div>
+      <div className="reveal">
         <SectionTitle kicker="TESTIMONI" title="Kata Panitia & UKM" sub="" />
         <div className="grid gap-4 md:grid-cols-3">
           {TESTIMONIALS.map((t) => (
@@ -211,7 +181,7 @@ export function LandingScreen({ onCatalog, onPortfolio, onJobs, onLogin, onRegis
       </div>
 
       {/* PRICING */}
-      <div id="harga">
+      <div className="reveal" id="harga">
         <SectionTitle kicker="HARGA" title="Gratis untuk Kampus" sub="Komisi 0% tahap rintisan — fokus ke adopsi 8 fakultas dulu" />
         <div className="grid gap-4 md:grid-cols-3">
           {PRICING.map((p) => (
@@ -241,7 +211,7 @@ export function LandingScreen({ onCatalog, onPortfolio, onJobs, onLogin, onRegis
       </div>
 
       {/* FAQ */}
-      <div className="mx-auto w-full max-w-3xl">
+      <div className="reveal mx-auto w-full max-w-3xl">
         <SectionTitle kicker="FAQ" title="Sering Ditanyakan" sub="" />
         <div className="grid gap-2.5">
           {FAQS.map((f) => (
@@ -263,6 +233,7 @@ export function LandingScreen({ onCatalog, onPortfolio, onJobs, onLogin, onRegis
             </Button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

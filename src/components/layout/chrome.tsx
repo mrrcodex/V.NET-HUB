@@ -10,22 +10,33 @@ interface TopbarProps {
   onRegister: () => void;
   onLogout: () => void;
   showSearch: boolean;
+  minimal?: boolean;
+  onBrand?: () => void;
 }
 
-export function Topbar({ screen, onNav, query, onQuery, user, onLogin, onRegister, onLogout, showSearch }: TopbarProps) {
+export function Topbar({ screen, onNav, query, onQuery, user, onLogin, onRegister, onLogout, showSearch, minimal, onBrand }: TopbarProps) {
+  // Tab Portofolio dihapus — diganti Showcase Gate (#/) sebagai pintu masuk wajib.
   const tabs: { id: Screen; label: string }[] = [
-    { id: 'landing', label: 'Beranda' },
+    { id: 'showcase', label: 'Beranda' },
     { id: 'catalog', label: 'Katalog' },
-    { id: 'portfolio', label: 'Portofolio UPNVJT' },
     { id: 'jobs', label: 'Magang & Proyek' },
     { id: 'myorders', label: 'Pesanan Saya' },
     { id: 'dashboard', label: 'Dashboard Alumni' },
     { id: 'admin', label: 'Admin Kampus' },
   ];
+  // Tab Beranda disembunyikan setelah masuk aplikasi —
+  // jalan kembali ke gate tetap via klik logo (reset).
+  const visibleTabs = minimal ? tabs : tabs.filter((t) => t.id !== 'showcase');
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-5 py-3">
-        <div className="flex items-center gap-2.5 text-xl font-extrabold">
+        <button
+          type="button"
+          onClick={onBrand ?? (() => onNav('showcase'))}
+          title="Keluar ke Beranda"
+          aria-label="V.NET-HUB — keluar ke beranda"
+          className="flex cursor-pointer items-center gap-2.5 rounded-xl text-xl font-extrabold transition hover:opacity-80 focus-visible:outline-2 focus-visible:outline-blue-600"
+        >
           <img
             src="/logo.jpeg"
             alt="V.NET-HUB Logo"
@@ -35,24 +46,26 @@ export function Topbar({ screen, onNav, query, onQuery, user, onLogin, onRegiste
           <span>
             V.NET-<b className="text-blue-600">HUB</b>
           </span>
-        </div>
-        <nav className="ml-2 flex flex-wrap gap-1.5">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => onNav(t.id)}
-              className={`rounded-full px-3.5 py-2 text-sm font-semibold transition ${
-                screen === t.id ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-blue-50 hover:text-blue-700'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </nav>
+        </button>
+        {!minimal && (
+          <nav className="ml-2 flex flex-wrap gap-1.5">
+            {visibleTabs.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => onNav(t.id)}
+                className={`rounded-full px-3.5 py-2 text-sm font-semibold transition ${
+                  screen === t.id ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-blue-50 hover:text-blue-700'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </nav>
+        )}
         <div className="whitespace-nowrap rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">
           🎖️ UPNVJT × Alumni
         </div>
-        {showSearch && (
+        {!minimal && showSearch && (
           <div className="flex min-w-[180px] flex-1 items-center gap-2 rounded-full border border-slate-200 bg-slate-100 px-3.5 py-2">
             <span>🔍</span>
             <input
@@ -102,7 +115,7 @@ export function Footer() {
         </div>
         <div>
           <b className="text-slate-800">Platform</b>
-          <p className="mt-1">Katalog Vendor • Portofolio • Paket Bundling • Papan Magang • Lacak Pesanan</p>
+          <p className="mt-1">Katalog Vendor • Cerita Sukses • Paket Bundling • Papan Magang • Lacak Pesanan</p>
         </div>
         <div>
           <b className="text-slate-800">Fakultas Mitra</b>

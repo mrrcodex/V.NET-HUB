@@ -14,3 +14,42 @@ body {
 .font-display {
   font-family: var(--font-display);
 }
+
+/* ——— Static landing: morph blobs + reveal ——— */
+@keyframes hero-morph {
+  0% { border-radius: 42% 58% 61% 39% / 45% 42% 58% 55%; transform: translate(0, 0) rotate(0deg) scale(1); }
+  50% { border-radius: 58% 42% 39% 61% / 55% 58% 42% 45%; transform: translate(24px, -18px) rotate(8deg) scale(1.08); }
+  100% { border-radius: 42% 58% 61% 39% / 45% 42% 58% 55%; transform: translate(0, 0) rotate(0deg) scale(1); }
+}
+
+@keyframes hero-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.hero-blob {
+  position: absolute;
+  pointer-events: none;
+  filter: blur(2px);
+  animation: hero-morph 12s ease-in-out infinite alternate;
+}
+
+.hero-blob-slow {
+  animation-duration: 18s;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-blob { animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+}

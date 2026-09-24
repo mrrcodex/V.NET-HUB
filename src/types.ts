@@ -4,7 +4,7 @@ export type KanbanColumn = 'Menunggu' | 'Diproses' | 'Selesai';
 
 export type AlumniPath = 'dashboard' | 'katalog' | 'pesanan' | 'magang' | 'profil';
 
-export type Screen = 'landing' | 'catalog' | 'portfolio' | 'myorders' | 'dashboard' | 'jobs' | 'admin';
+export type Screen = 'showcase' | 'landing' | 'catalog' | 'portfolio' | 'myorders' | 'dashboard' | 'jobs' | 'admin';
 
 export type Role = 'Mahasiswa' | 'Alumni' | 'Admin Kampus';
 

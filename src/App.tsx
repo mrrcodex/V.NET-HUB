@@ -5,8 +5,8 @@ import { DashboardScreen } from './components/dashboard/DashboardScreen.tsx';
 import { JobsBoard } from './components/jobs/JobsBoard.tsx';
 import { RfqModal } from './components/rfq/RfqModal.tsx';
 import { LandingScreen } from './components/landing/LandingScreen.tsx';
+import { ShowcaseLanding, type ShowcaseNext } from './components/showcase/ShowcaseLanding.tsx';
 import { AuthModal } from './components/auth/AuthModal.tsx';
-import { PortfolioScreen } from './components/portfolio/PortfolioScreen.tsx';
 import { AdminScreen } from './components/admin/AdminScreen.tsx';
 import { MyOrdersScreen, VendorDetailModal } from './components/vendor/VendorPanels.tsx';
 import { INITIAL_JOBS, INITIAL_PRODUCTS } from './data/catalog.ts';
@@ -28,13 +28,24 @@ import type {
 
 const ALUMNI_PATHS: AlumniPath[] = ['dashboard', 'katalog', 'pesanan', 'magang', 'profil'];
 
+const ENTER_KEY = 'vnet-hub-entered-v1';
+
+function loadEntered(): boolean {
+  try {
+    return sessionStorage.getItem(ENTER_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
 function routeFromHash(): { screen: Screen; path: AlumniPath } | null {
   const h = window.location.hash;
   if (h.startsWith('#/alumni/')) {
     const p = h.replace('#/alumni/', '');
     if ((ALUMNI_PATHS as string[]).includes(p)) return { screen: 'dashboard', path: p as AlumniPath };
   }
-  if (h.startsWith('#/portofolio')) return { screen: 'portfolio', path: 'dashboard' };
+  // Tab Portofolio dihapus — redirect ke Showcase Gate.
+  if (h.startsWith('#/portofolio')) return { screen: 'showcase', path: 'dashboard' };
   if (h.startsWith('#/katalog')) return { screen: 'catalog', path: 'dashboard' };
   if (h.startsWith('#/admin')) return { screen: 'admin', path: 'dashboard' };
   return null;
@@ -43,7 +54,8 @@ function routeFromHash(): { screen: Screen; path: AlumniPath } | null {
 type RfqVendor = Pick<Vendor, 'name' | 'cat' | 'emoji'>;
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('landing');
+  const [screen, setScreen] = useState<Screen>('showcase');
+  const [hasEntered, setHasEntered] = useState<boolean>(loadEntered);
   const [alumniPath, setAlumniPath] = useState<AlumniPath>('dashboard');
   const [query, setQuery] = useState('');
   const [rfqVendor, setRfqVendor] = useState<RfqVendor | null>(null);
@@ -58,11 +70,17 @@ export default function App() {
   const toast = useToast();
   const auth = useAuth(toast.show);
 
-  // deep-link
+  // deep-link — hormati gate: deep-link dalam aplikasi ditahan di showcase bila belum masuk
   useEffect(() => {
     const apply = () => {
       const r = routeFromHash();
       if (r) {
+        if (!loadEntered() && r.screen !== 'showcase' && r.screen !== 'landing') {
+          setScreen('showcase');
+          setAlumniPath(r.path);
+          history.replaceState(null, '', '#/');
+          return;
+        }
         setScreen(r.screen);
         setAlumniPath(r.path);
       }
@@ -73,16 +91,15 @@ export default function App() {
   }, []);
 
   const go = useCallback((id: Screen) => {
-    setScreen(id);
-    if (id === 'dashboard' && !window.location.hash.startsWith('#/alumni')) {
+    const target: Screen = id === 'portfolio' ? 'showcase' : id;
+    setScreen(target);
+    if (target === 'dashboard' && !window.location.hash.startsWith('#/alumni')) {
       history.replaceState(null, '', '#/alumni/dashboard');
-    } else if (id === 'portfolio') {
-      history.replaceState(null, '', '#/portofolio');
-    } else if (id === 'catalog') {
+    } else if (target === 'catalog') {
       history.replaceState(null, '', '#/katalog');
-    } else if (id === 'admin') {
+    } else if (target === 'admin') {
       history.replaceState(null, '', '#/admin');
-    } else if (id === 'landing' || id === 'jobs' || id === 'myorders') {
+    } else if (target === 'showcase' || target === 'landing' || target === 'jobs' || target === 'myorders') {
       history.replaceState(null, '', '#/');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -90,6 +107,14 @@ export default function App() {
 
   const goGuarded = useCallback(
     (id: Screen) => {
+      // Gate wajib: belum masuk aplikasi → tahan di showcase.
+      if (!sessionStorage.getItem(ENTER_KEY) && id !== 'showcase' && id !== 'landing') {
+        setScreen('showcase');
+        history.replaceState(null, '', '#/');
+        toast.show('👋 Klik Masuk ke Aplikasi dulu untuk menjelajah dashboard');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
       if (id === 'dashboard') {
         auth.requireAuth(() => go(id), 'Alumni');
         return;
@@ -100,8 +125,41 @@ export default function App() {
       }
       go(id);
     },
+    [auth, go, toast],
+  );
+
+  const enterApp = useCallback(
+    (next: ShowcaseNext) => {
+      setHasEntered(true);
+      try {
+        sessionStorage.setItem(ENTER_KEY, '1');
+      } catch {
+        /* abaikan */
+      }
+      if (next === 'dashboard') {
+        auth.requireAuth(() => go(next), 'Alumni');
+        return;
+      }
+      if (next === 'admin') {
+        auth.requireAuth(() => go(next), 'Admin Kampus');
+        return;
+      }
+      go(next);
+    },
     [auth, go],
   );
+
+  const exitToGate = useCallback(() => {
+    setHasEntered(false);
+    try {
+      sessionStorage.removeItem(ENTER_KEY);
+    } catch {
+      /* abaikan */
+    }
+    setScreen('showcase');
+    history.replaceState(null, '', '#/');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   const subGo = useCallback((path: AlumniPath) => {
     setAlumniPath(path);
@@ -193,9 +251,11 @@ export default function App() {
       <Topbar
         screen={screen}
         onNav={goGuarded}
+        onBrand={exitToGate}
         query={query}
         onQuery={setQuery}
-        showSearch={screen === 'catalog'}
+        showSearch={hasEntered && screen === 'catalog'}
+        minimal={!hasEntered}
         user={auth.user}
         onLogin={() => {
           auth.setAuthMode('login');
@@ -208,15 +268,27 @@ export default function App() {
         onLogout={auth.logout}
       />
 
-      <main className="mx-auto max-w-6xl px-5 pb-20 pt-6">
+      <main className={screen === 'showcase' || screen === 'landing' ? 'pb-20' : 'mx-auto max-w-6xl px-5 pb-20 pt-6'}>
+        {screen === 'showcase' && (
+          <div className="pt-0">
+            <ShowcaseLanding
+              initialId={portfolioId}
+              onEnter={enterApp}
+              onQuote={() => enterApp('catalog')}
+              onClearCase={() => setPortfolioId(null)}
+            />
+          </div>
+        )}
+
         {screen === 'landing' && (
           <LandingScreen
-            onCatalog={() => go('catalog')}
+            onCatalog={() => goGuarded('catalog')}
             onPortfolio={(id) => {
               setPortfolioId(id);
-              go('portfolio');
+              go('showcase');
+              requestAnimationFrame(() => document.getElementById('cerita')?.scrollIntoView({ behavior: 'smooth' }));
             }}
-            onJobs={() => go('jobs')}
+            onJobs={() => goGuarded('jobs')}
             onLogin={() => {
               auth.setAuthMode('login');
               auth.setAuthOpen(true);
@@ -238,10 +310,13 @@ export default function App() {
           />
         )}
 
+        {/* Rute lama #/portofolio dialihkan ke Showcase Gate agar tidak 404 */}
         {screen === 'portfolio' && (
-          <PortfolioScreen
+          <ShowcaseLanding
             initialId={portfolioId}
-            onQuote={() => go('catalog')}
+            onEnter={enterApp}
+            onQuote={() => enterApp('catalog')}
+            onClearCase={() => setPortfolioId(null)}
           />
         )}
 
